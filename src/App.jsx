@@ -1,4 +1,5 @@
 import ListaAlumnos from './ListaAlumnos';
+import FormularioAlumno from './FormularioAlumno';
 
 function App() {
   return (
