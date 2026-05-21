@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import MenuNavegacion from './MenuNavegacion';
 import ListaAlumnos from './ListaAlumnos';
+import Inscripciones from './Inscripciones';
 
-// Un componente súper simple de "Bienvenida" para la ruta principal (/)
 function Inicio() {
   return (
     <div className="p-8 text-center bg-white rounded-lg shadow-md mt-10">
@@ -16,17 +16,16 @@ function App() {
   return (
     <BrowserRouter>
       <div className="bg-gray-100 min-h-screen">
-        {/* El menú queda fijo en todas las pantallas */}
         <MenuNavegacion />
         
-        {/* Acá adentro es donde va a ir cambiando el contenido según donde hagamos clic */}
         <main className="container mx-auto mt-6 px-4">
           <Routes>
             <Route path="/" element={<Inicio />} />
             <Route path="/alumnos" element={<ListaAlumnos />} />
             
-            {/* Dejamos preparadas las páginas que vamos a construir más adelante */}
-            <Route path="/inscripciones" element={<div className="p-8 text-center font-bold text-gray-500">Módulo de Inscripciones (En construcción)</div>} />
+            {/* ACÁ CONECTAMOS LA RUTA AL COMPONENTE */}
+            <Route path="/inscripciones" element={<Inscripciones />} />
+            
             <Route path="/pagos" element={<div className="p-8 text-center font-bold text-gray-500">Módulo de Pagos (En construcción)</div>} />
           </Routes>
         </main>
