@@ -4,6 +4,7 @@ import ListaAlumnos from './ListaAlumnos';
 import Inscripciones from './Inscripciones';
 import Inicio from './Inicio';
 import Pagos from './Pagos';
+import Reportes from './Reportes';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             {/* ACÁ CONECTAMOS LA RUTA AL COMPONENTE */}
             <Route path="/inscripciones" element={<Inscripciones />} />
             <Route path="/pagos" element={<Pagos />} />
+            <Route path="/reportes" element={<Reportes />} />
           </Routes>
         </main>
       </div>
