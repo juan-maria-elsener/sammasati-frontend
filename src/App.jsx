@@ -3,6 +3,7 @@ import MenuNavegacion from './MenuNavegacion';
 import ListaAlumnos from './ListaAlumnos';
 import Inscripciones from './Inscripciones';
 import Inicio from './Inicio';
+import Pagos from './Pagos';
 
 function App() {
   return (
@@ -17,8 +18,7 @@ function App() {
             
             {/* ACÁ CONECTAMOS LA RUTA AL COMPONENTE */}
             <Route path="/inscripciones" element={<Inscripciones />} />
-            
-            <Route path="/pagos" element={<div className="p-8 text-center font-bold text-gray-500">Módulo de Pagos (En construcción)</div>} />
+            <Route path="/pagos" element={<Pagos />} />
           </Routes>
         </main>
       </div>
