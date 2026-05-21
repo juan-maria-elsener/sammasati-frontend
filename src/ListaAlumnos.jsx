@@ -5,7 +5,6 @@ import FormularioAlumno from './FormularioAlumno';
 function ListaAlumnos() {
   const [alumnos, setAlumnos] = useState([]);
 
-  // 1. Creamos una función que se encarga de ir a buscar los alumnos
   const cargarAlumnos = () => {
     axios.get('https://localhost:7132/api/Alumnos')
       .then(response => {
@@ -16,16 +15,34 @@ function ListaAlumnos() {
       });
   };
 
-  // 2. El useEffect ahora solo llama a esa función la primera vez que carga la página
   useEffect(() => {
     cargarAlumnos();
   }, []);
+
+  // NUEVA FUNCIÓN: Para borrar un alumno
+  const manejarBorrar = (id) => {
+    // Agregamos una confirmación para que no borres a nadie por accidente si se te escapa el clic
+    const confirmar = window.confirm("¿Estás seguro de que querés borrar a este alumno de Sammasati?");
+    
+    if (confirmar) {
+      // Usamos comillas invertidas (backticks) para poder meter el ID en la URL
+      axios.delete(`https://localhost:7132/api/Alumnos/${id}`)
+        .then(response => {
+          console.log("Alumno borrado exitosamente.");
+          // Volvemos a cargar la tabla para que el alumno desaparezca de la vista
+          cargarAlumnos();
+        })
+        .catch(error => {
+          console.error("Error al borrar:", error);
+          alert("No se pudo borrar. Si el alumno ya tiene inscripciones o cuotas registradas, el sistema te protege para no dejar datos huérfanos.");
+        });
+    }
+  };
 
   return (
     <div className="p-8">
       <h2 className="text-3xl font-bold text-gray-800 mb-6">Listado de Alumnos - Sammasati</h2>
       
-      {/* 3. Acá le pasamos la función al formulario para que la use cuando termine de guardar */}
       <FormularioAlumno onAlumnoAgregado={cargarAlumnos} />
       
       <div className="overflow-x-auto bg-white rounded-lg shadow-md border border-gray-200">
@@ -44,8 +61,16 @@ function ListaAlumnos() {
                   <td className="px-6 py-4 font-medium text-gray-900">{alumno.nombre} {alumno.apellido}</td>
                   <td className="px-6 py-4 text-gray-600">{alumno.telefono || '---'}</td>
                   <td className="px-6 py-4 text-center">
-                    <button className="bg-blue-100 text-blue-700 px-4 py-2 rounded font-semibold hover:bg-blue-200 transition-colors">
+                    <button className="bg-blue-100 text-blue-700 px-4 py-2 rounded font-semibold hover:bg-blue-200 transition-colors mr-2">
                       Editar
+                    </button>
+                    {/* NUEVO BOTÓN: Eliminar */}
+                    {/* Le pasamos el idAlumno exactamente como viene de tu C# */}
+                    <button 
+                      onClick={() => manejarBorrar(alumno.idAlumno)}
+                      className="bg-red-100 text-red-700 px-4 py-2 rounded font-semibold hover:bg-red-200 transition-colors"
+                    >
+                      Borrar
                     </button>
                   </td>
                 </tr>
