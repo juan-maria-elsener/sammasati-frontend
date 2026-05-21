@@ -1,46 +1,85 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-function FormularioAlumno({ onAlumnoAgregado }) {
+// Agregamos dos propiedades nuevas que va a recibir desde la tabla
+function FormularioAlumno({ onAlumnoAgregado, alumnoEnEdicion, cancelarEdicion }) {
   const [nombre, setNombre] = useState('');
-  const [apellido, setApellido] = useState(''); // Agregamos el estado para el apellido
+  const [apellido, setApellido] = useState('');
   const [telefono, setTelefono] = useState('');
+
+  // Magia de React: Si "alumnoEnEdicion" cambia, rellenamos los inputs automáticamente
+  useEffect(() => {
+    if (alumnoEnEdicion) {
+      setNombre(alumnoEnEdicion.nombre);
+      setApellido(alumnoEnEdicion.apellido);
+      setTelefono(alumnoEnEdicion.telefono || '');
+    } else {
+      limpiarInputs();
+    }
+  }, [alumnoEnEdicion]);
+
+  const limpiarInputs = () => {
+    setNombre('');
+    setApellido('');
+    setTelefono('');
+  };
 
   const manejarEnvio = (e) => {
     e.preventDefault();
-
-    // Le quitamos los espacios en blanco al teléfono para cumplir con tu Regex de C#
     const telefonoLimpio = telefono.replace(/\s+/g, '');
 
-    // Armamos el paquete exactamente como lo pide tu backend
-    const nuevoAlumno = { 
-      nombre: nombre, 
-      apellido: apellido,
-      telefono: telefonoLimpio
-    };
+    if (alumnoEnEdicion) {
+      // -----------------------------------------
+      // MODO EDICIÓN: Actualizamos con PUT
+      // -----------------------------------------
+      const alumnoActualizado = { 
+        idAlumno: alumnoEnEdicion.idAlumno, // C# necesita saber el ID para actualizar
+        nombre: nombre, 
+        apellido: apellido,
+        telefono: telefonoLimpio
+      };
 
-    axios.post('https://localhost:7132/api/Alumnos', nuevoAlumno)
-      .then(response => {
-        console.log("¡Alumno guardado con éxito!", response.data);
-        // Limpiamos los 3 inputs
-        setNombre('');
-        setApellido('');
-        setTelefono('');
-        
-        // Le avisamos a la tabla que recargue los datos
-        if (onAlumnoAgregado) {
-          onAlumnoAgregado();
-        }
-      })
-      .catch(error => {
-        console.error("Error al guardar el alumno:", error);
-        alert("Hubo un error al guardar. Revisá la consola para más detalles.");
-      });
+      axios.put(`https://localhost:7132/api/Alumnos/${alumnoEnEdicion.idAlumno}`, alumnoActualizado)
+        .then(response => {
+          console.log("¡Alumno editado con éxito!");
+          limpiarInputs();
+          if (cancelarEdicion) cancelarEdicion(); // Avisamos que terminamos de editar
+          if (onAlumnoAgregado) onAlumnoAgregado(); // Recargamos la tabla
+        })
+        .catch(error => {
+          console.error("Error al editar:", error);
+          alert("Hubo un error al actualizar el alumno.");
+        });
+
+    } else {
+      // -----------------------------------------
+      // MODO CREACIÓN: Guardamos con POST (Igual que antes)
+      // -----------------------------------------
+      const nuevoAlumno = { 
+        nombre: nombre, 
+        apellido: apellido,
+        telefono: telefonoLimpio
+      };
+
+      axios.post('https://localhost:7132/api/Alumnos', nuevoAlumno)
+        .then(response => {
+          console.log("¡Alumno guardado con éxito!");
+          limpiarInputs();
+          if (onAlumnoAgregado) onAlumnoAgregado();
+        })
+        .catch(error => {
+          console.error("Error al guardar:", error);
+          alert("Hubo un error al crear el alumno.");
+        });
+    }
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200 mb-8">
-      <h3 className="text-xl font-bold text-emerald-800 mb-4">Agregar Nuevo Alumno</h3>
+    <div className={`p-6 rounded-lg shadow-md border mb-8 transition-colors ${alumnoEnEdicion ? 'bg-blue-50 border-blue-200' : 'bg-white border-gray-200'}`}>
+      {/* Cambiamos el título dinámicamente */}
+      <h3 className={`text-xl font-bold mb-4 ${alumnoEnEdicion ? 'text-blue-800' : 'text-emerald-800'}`}>
+        {alumnoEnEdicion ? 'Editando Alumno' : 'Agregar Nuevo Alumno'}
+      </h3>
       
       <form onSubmit={manejarEnvio} className="flex flex-col md:flex-row gap-4 items-end">
         <div className="flex-1 w-full">
@@ -55,7 +94,6 @@ function FormularioAlumno({ onAlumnoAgregado }) {
           />
         </div>
 
-        {/* NUEVO INPUT: APELLIDO */}
         <div className="flex-1 w-full">
           <label className="block text-sm font-medium text-gray-700 mb-1">Apellido</label>
           <input 
@@ -79,12 +117,28 @@ function FormularioAlumno({ onAlumnoAgregado }) {
           />
         </div>
 
-        <button 
-          type="submit" 
-          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-6 rounded-md transition-colors w-full md:w-auto"
-        >
-          Guardar
-        </button>
+        <div className="flex gap-2 w-full md:w-auto">
+          <button 
+            type="submit" 
+            className={`${alumnoEnEdicion ? 'bg-blue-600 hover:bg-blue-700' : 'bg-emerald-600 hover:bg-emerald-700'} text-white font-bold py-2 px-6 rounded-md transition-colors w-full md:w-auto`}
+          >
+            {alumnoEnEdicion ? 'Actualizar' : 'Guardar'}
+          </button>
+          
+          {/* Si estamos editando, mostramos un botón para cancelar y volver a modo creación */}
+          {alumnoEnEdicion && (
+            <button 
+              type="button" 
+              onClick={() => {
+                limpiarInputs();
+                if (cancelarEdicion) cancelarEdicion();
+              }}
+              className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-md transition-colors"
+            >
+              Cancelar
+            </button>
+          )}
+        </div>
       </form>
     </div>
   );
