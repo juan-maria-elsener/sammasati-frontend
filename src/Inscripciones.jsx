@@ -48,17 +48,23 @@ function Inscripciones() {
     };
 
     axios.post('https://localhost:7132/api/Inscripciones', nuevaInscripcion)
-      .then(response => {
-        alert("¡Alumno inscripto a la clase correctamente!");
-        setIdAlumno('');
-        setIdClase('');
-        // REFRESCAMOS LA TABLA: Para que aparezca la nueva fila al instante
-        cargarInscripciones();
-      })
-      .catch(error => {
-        console.error("Error al inscribir:", error);
-        alert("Hubo un error al guardar la inscripción.");
-      });
+  .then(response => {
+    // Leemos qué estado decidió ponerle C# a este alumno
+    const estadoAsignado = response.data.estado;
+
+    if (estadoAsignado === 'Lista de Espera') {
+      alert("⚠️ LA CLASE ESTÁ LLENA. El alumno fue anotado en Lista de Espera.");
+    } else {
+      alert("✅ ¡Inscripción Activa guardada con éxito!");
+    }
+    
+    // Acá va tu código para limpiar el formulario o recargar la tabla
+    cargarInscripciones(); 
+  })
+  .catch(error => {
+    console.error("Error al guardar:", error);
+    alert("Hubo un error al guardar la inscripción.");
+  });
   };
 
   // FUNCIÓN EXTRA: Por si quieren dar de baja una inscripción desde la tabla
