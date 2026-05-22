@@ -9,11 +9,12 @@ import Pagos from './Pagos';
 import Reportes from './Reportes';
 import Asistencias from './Asistencias';
 import Login from './Login'; // <-- NUEVA PANTALLA
+import CalendarioClases from './Calendario.Clases';
 
 function App() {
   // Estado para saber si el usuario está logueado
   const [usuario, setUsuario] = useState(null);
-
+  
   // Al cargar la app, revisamos si ya había iniciado sesión antes
   useEffect(() => {
     const usuarioGuardado = localStorage.getItem('usuarioSammasati');
@@ -59,6 +60,7 @@ function App() {
                 <Link to="/inscripciones" className="text-gray-300 hover:text-white font-bold py-2 border-b border-gray-700">🧘‍♀️ Inscripciones</Link>
                 <Link to="/pagos" className="text-gray-300 hover:text-white font-bold py-2 border-b border-gray-700">💳 Pagos</Link>
                 <Link to="/reportes" className="text-gray-300 hover:text-white font-bold py-2 border-b border-gray-700">📊 Reportes</Link>
+                <Link to="/calendario" className="text-gray-300 hover:text-white font-bold py-2 border-b border-gray-700">🗓️ Calendario</Link>
               </>
             )}
 
@@ -90,7 +92,8 @@ function App() {
             )}
 
             <Route path="/asistencias" element={<Asistencias />} />
-            
+            <Route path="/calendario" element={<CalendarioClases />} />
+
             {/* Ruta por defecto por si escriben cualquier cosa */}
             <Route path="*" element={<Navigate to={esAdmin ? "/" : "/asistencias"} />} />
           </Routes>
