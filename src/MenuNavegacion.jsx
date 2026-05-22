@@ -28,6 +28,7 @@ function MenuNavegacion() {
           <Link to="/inscripciones" className={claseBoton('/inscripciones')}>Inscripciones</Link>
           <Link to="/pagos" className={claseBoton('/pagos')}>Pagos</Link>
           <Link to="/reportes" className={claseBoton('/reportes')}>Reportes</Link>
+          <Link to="/asistencias" className={claseBoton('/asistencias')}>Asistencias</Link>
         </div>
 
       </div>

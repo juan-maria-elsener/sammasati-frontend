@@ -5,6 +5,7 @@ import Inscripciones from './Inscripciones';
 import Inicio from './Inicio';
 import Pagos from './Pagos';
 import Reportes from './Reportes';
+import Asistencias from './Asistencias';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
             <Route path="/inscripciones" element={<Inscripciones />} />
             <Route path="/pagos" element={<Pagos />} />
             <Route path="/reportes" element={<Reportes />} />
+            <Route path="/asistencias" element={<Asistencias />} />
           </Routes>
         </main>
       </div>
